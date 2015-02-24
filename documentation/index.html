@@ -148,7 +148,7 @@
 	</tr>
 </table>
 
-<h3>Configueing SuperScript.ExternalFile.SqlServer</h3>
+<h3>Configuring SuperScript.ExternalFile.SqlServer</h3>
 
 <p>
 	SuperScript may be configured to store the contents of external files in Microsoft SQL Server declaratively in the 
@@ -179,16 +179,16 @@
 
 <pre class="brush: xml">
 	&lt;configuration&gt;
-  		&lt;configSections&gt;
-  			&lt;section name="superScript" type="SuperScript.Configuration.SuperScriptConfig, SuperScript.Common" /&gt;
-  			&lt;section name="superScript.ExternalFile" type="SuperScript.ExternalFile.Configuration.ExternalFileConfig, SuperScript.ExternalFile" /&gt;
-  		&lt;/configSections&gt;
-  		&hellp;
-  		&lt;connectionStrings&gt;
-  			&lt;add name="MyConnString" providerName="System.Data.SqlClient" connectionString="{YOUR CONNECTION STRING}" /&gt;
-  		&lt;/connectionStrings&gt;
-  		&hellip;
-  		<!-- declaring a connection string in place -->
+		&lt;configSections&gt;
+			&lt;section name="superScript" type="SuperScript.Configuration.SuperScriptConfig, SuperScript.Common" /&gt;
+			&lt;section name="superScript.ExternalFile" type="SuperScript.ExternalFile.Configuration.ExternalFileConfig, SuperScript.ExternalFile" /&gt;
+		&lt;/configSections&gt;
+		&hellp;
+		&lt;connectionStrings&gt;
+			&lt;add name="MyConnString" providerName="System.Data.SqlClient" connectionString="{YOUR CONNECTION STRING}" /&gt;
+		&lt;/connectionStrings&gt;
+		&hellip;
+		<!-- declaring a connection string in place -->
 		&lt;superScript.ExternalFile&gt;
 			&lt;storage type="SuperScript.ExternalFile.Storage.DbStore, SuperScript.ExternalFile"&gt;
 				&lt;dbProvider connectionString="{YOUR CONNECTION STRING}" type="SuperScript.ExternalFile.SqlServer.SqlServerStoreProvider, SuperScript.ExternalFile.SqlServer" /&gt;
