@@ -222,7 +222,7 @@
 	&lt;configuration&gt;
 		&lt;superScript.ExternalFile&gt;
 			&lt;scavenger scavengeItemsOlderThan="1:0:0" scavengePeriod="1:0:0" /&gt;
-			&lt;storage &hellip /&gt;
+			&lt;storage &hellip; /&gt;
 		&lt;/superScript.ExternalFile&gt;
 	&lt;/configuration&gt;
 </pre>
@@ -257,3 +257,38 @@
 	// finally, instruct SuperScript.ExternalFile to use the above store provider
 	SuperScript.ExternalFile.Configuration.Settings.Instance.StoreProvider = dbStore;
 </pre>
+
+<h3 id="scavenging">Scavenging</h3>
+
+<p>
+	It is also possible to optionally configure the scavenger by adding a <code>&lt;scavenger/&gt;</code> element.
+</p>
+
+<pre class="brush: xml">
+	&lt;configuration&gt;
+		&lt;superScript.ExternalFile&gt;
+			&lt;scavenger scavengeItemsOlderThan="1:0:0" scavengePeriod="1:0:0" /&gt;
+			&lt;storage &hellip; /&gt;
+		&lt;/superScript.ExternalFile&gt;
+	&lt;/configuration&gt;
+</pre>
+
+<p>
+	Or programmatically:
+</p>
+
+<pre class="brush: c#">
+	SuperScript.ExternalFile.Configuration.Settings.Instance.ScavengeItemsOlderThan = new TimeSpan(1, 0, 0);
+	
+	SuperScript.ExternalFile.Configuration.Settings.Instance.ScavengePeriod = new TimeSpan(1, 0, 0);
+</pre>
+
+<p>
+	Both of the above examples set the <abbr title="SuperScript.ExternalFile.Configuration.Settings.Instance.ScavengePeriod"><code>ScavengePeriod</code></abbr> and
+	<abbr title="SuperScript.ExternalFile.Configuration.Settings.Instance.ScavengeItemsOlderThan"><code>ScavengeItemsOlderThan</code></abbr> properties
+	to a <code>TimeSpan</code> indicating 1 hour. This is actually the default value.
+</p>
+
+<p>
+	More can be read about configuring the scavenger <a href="http://supertext.github.io/SuperScript.ExternalFile/#!/storage.istore/config" target="_blank">here</a>.
+</p>
