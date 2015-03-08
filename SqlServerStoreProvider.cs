@@ -5,6 +5,7 @@ using System.Data;
 using System.Data.SqlClient;
 using SuperScript.ExternalFile.Storage;
 
+
 namespace SuperScript.ExternalFile.SqlServer
 {
 	public class SqlServerStoreProvider : IDbStoreProvider
@@ -145,18 +146,17 @@ namespace SuperScript.ExternalFile.SqlServer
 										IF OBJECT_ID('dbo." + StoreName + @"', 'U') IS NOT NULL DROP TABLE dbo." + StoreName + @"
 										CREATE TABLE [dbo].[" + StoreName + @"](
 											[key] [nvarchar](250) NOT NULL,
-											[cacheForTimePeriod] [varchar](20) NOT NULL,
+											[cacheForTimePeriod] [varchar](20) NOT NULL DEFAULT '{0:00:00:00}',
 											[contents] [text] NOT NULL,
 											[contentType] [varchar](45) NOT NULL,
-											[longevity] [int] NOT NULL,
-										 CONSTRAINT [PK_superscript_externalfiles] PRIMARY KEY CLUSTERED 
+											[longevity] [int] NOT NULL DEFAULT 0,
+	                                        [created] [datetime2] NOT NULL DEFAULT GETDATE(),
+										 CONSTRAINT [PK_" + StoreName + @"] PRIMARY KEY CLUSTERED 
 										(
 											[key] ASC
 										)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
 										) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 										SET ANSI_PADDING OFF
-										ALTER TABLE [dbo].[" + StoreName + @"] ADD  CONSTRAINT [DF_" + StoreName + @"_cacheForTimePeriod]  DEFAULT ('{0:00:00:00}') FOR [cacheForTimePeriod]
-										ALTER TABLE [dbo].[" + StoreName + @"] ADD  CONSTRAINT [DF_" + StoreName + @"_longevity]  DEFAULT ((0)) FOR [longevity]
 										SELECT
 											* 
 										FROM
@@ -430,6 +430,42 @@ namespace SuperScript.ExternalFile.SqlServer
 				throw new UnableToCreateStoreException();
 			}
 		}
+
+
+        /// <summary>
+        /// Removes instances of <see cref="IStorable"/> which are older than the specified <see cref="TimeSpan"/>.
+        /// </summary>
+        /// <param name="removeThreshold">Instances of <see cref="IStorable"/> which are older than this will be removed from the store.</param>
+        public void Scavenge(TimeSpan removeThreshold)
+        {
+            if (ConnectionString == null)
+            {
+                throw new MissingDatabaseConfigurationException("No matching connection string was found for the specified ConnectionStringName.");
+            }
+
+            // verify that we have a StoreName
+            if (String.IsNullOrWhiteSpace(StoreName))
+            {
+                throw new ConfigurablePropertyNotSpecifiedException("The StoreName property must be specified.");
+            }
+
+            using (var conn = new SqlConnection(ConnectionString))
+            using (var cmd = conn.CreateCommand())
+            {
+                cmd.CommandType = CommandType.Text;
+                cmd.CommandText = @"DELETE FROM [dbo].[" + StoreName + @"]
+                                    WHERE [created] <= @olderThan;";
+                cmd.Parameters.Add("@olderThan", SqlDbType.DateTime2).Value = DateTime.Now.Subtract(removeThreshold);
+
+                conn.Open();
+                if (!String.IsNullOrWhiteSpace(DbName))
+                {
+                    conn.ChangeDatabase(DbName);
+                }
+
+                cmd.ExecuteNonQuery();
+            }
+        }
 
 
 		/// <summary>
