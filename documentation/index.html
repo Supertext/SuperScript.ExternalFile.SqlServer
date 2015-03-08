@@ -34,17 +34,18 @@
 
 <pre class="brush: c#">
 	public class SqlServerStoreProvider : IDbStoreProvider
-  	{
-	  	AddOrUpdate(IStorable storable);
-	  	string ConnectionString { get; set; }
-	  	string DbName { get; set; }
-	  	void Delete(string key);
-	  	void DeleteStore();
-	  	IStorable Get(string key);
-	  	IEnumerable&lt;IStorable&gt; GetAll();
-	  	void Init();
-	  	string StoreName { get; set; }
-  	}
+	{
+		AddOrUpdate(IStorable storable);
+		string ConnectionString { get; set; }
+		string DbName { get; set; }
+		void Delete(string key);
+		void DeleteStore();
+		IStorable Get(string key);
+		IEnumerable&lt;IStorable&gt; GetAll();
+		void Init();
+		void Scavenge(TimeSpan removeThreshold);
+		string StoreName { get; set; }
+	}
 </pre>
 
 <table class="table table-bordered">
@@ -129,6 +130,15 @@
 	  </td>
 	</tr>
 	<tr>
+		<td>Scavenge</td>
+		<td>void</td>
+		<td>
+			<p>
+				Removes instances of <abbr title="SuperScript.ExternalFile.Storage.IStorable"><code>IStorable</code></abbr> which are older than the specified <code>TimeSpan</code>.
+			</p>
+		</td>
+	</tr>
+	<tr>
 		<td>StoreName</td>
 		<td>string</td>
 		<td>
@@ -203,6 +213,29 @@
 		&lt;/superScript.ExternalFile&gt;
 	&lt;/configuration&gt;
 </pre>
+
+<p>
+	It is also possible to optionally configure the scavenger by adding a <code>&lt;scavenger/&gt;</code> element.
+</p>
+
+<pre class="brush: xml">
+	&lt;configuration&gt;
+		&lt;superScript.ExternalFile&gt;
+			&lt;scavenger scavengeItemsOlderThan="1:0:0" scavengePeriod="1:0:0" /&gt;
+			&lt;storage &hellip /&gt;
+		&lt;/superScript.ExternalFile&gt;
+	&lt;/configuration&gt;
+</pre>
+
+<p>
+	The above example sets the <abbr title="SuperScript.ExternalFile.Configuration.Settings.Instance.ScavengePeriod"><code>ScavengePeriod</code></abbr> and
+	<abbr title="SuperScript.ExternalFile.Configuration.Settings.Instance.ScavengeItemsOlderThan"><code>ScavengeItemsOlderThan</code></abbr> properties
+	to a <code>TimeSpan</code> indicating 1 hour. This is actually the default value.
+</p>
+
+<p>
+	More can be read about configuring the scavenger <a href="http://supertext.github.io/SuperScript.ExternalFile/#!/storage.istore/config" target="_blank">here</a>.
+</p>
 
 <p>
 	Programmatically, the connection string must be declared (instead of specifying by name).
